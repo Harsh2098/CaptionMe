@@ -33,7 +33,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.1'
     compile 'com.android.support:design:25.3.1'
-    compile 'com.github.yasharpm:InstaCropper:ae135fe113'
-    compile 'com.yashoid:instacropper:1.0.6'
+    compile 'com.github.yalantis:ucrop:2.2.1'
     testCompile 'junit:junit:4.12'
 }

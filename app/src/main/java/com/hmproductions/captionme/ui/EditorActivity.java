@@ -27,18 +27,20 @@ import android.widget.Toast;
 import com.hmproductions.captionme.R;
 import com.hmproductions.captionme.data.CaptionContract;
 import com.hmproductions.captionme.data.CaptionContract.CaptionEntry;
-import com.yashoid.instacropper.InstaCropperView;
+import com.yalantis.ucrop.UCrop;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String LOG_TAG = EditorActivity.class.getSimpleName();
+    /* Request code for cropping is 69 */
+
+    private static final String LOG_TAG = EditorActivity.class.getSimpleName() + "TAG";
     private static final String NO_CAPTION = "(no caption)";
     private static final int REQUEST_CODE_GALLERY = 1001;
     private static final int REQUEST_CODE_CAMERA = 1002 ;
-    private static final int REQUEST_CODE_EDIT = 1003;
+    private static final int REQUEST_CODE_CROP = 69;
     private static final int LOADER_ID = 1000;
 
     ImageView caption_imageView;
@@ -178,10 +180,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                         .setNegativeButton("EDIT", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Intent editIntent = new Intent(Intent.ACTION_EDIT);
-                                editIntent.setDataAndType(mImageUri, "image/*");
-                                editIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                startActivityForResult(Intent.createChooser(editIntent, null), REQUEST_CODE_EDIT);
+                                UCrop.of(mImageUri,mImageUri).withMaxResultSize(100,100).start(EditorActivity.this);
                             }
                         })
                         .setPositiveButton("CHANGE", new DialogInterface.OnClickListener() {
@@ -212,11 +211,17 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == REQUEST_CODE_GALLERY)
+        if(requestCode == REQUEST_CODE_GALLERY || requestCode == REQUEST_CODE_CROP)
         {
             if(data != null)
             {
-                mImageUri = data.getData();
+                if(requestCode == REQUEST_CODE_GALLERY)
+                    mImageUri = data.getData();
+                else {
+                    mImageUri = UCrop.getOutput(data);
+                    Log.v(LOG_TAG, String.valueOf(mImageUri));
+                }
+
                 String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
                 Cursor cursor = getContentResolver().query(mImageUri, filePathColumn, null, null, null);
@@ -229,7 +234,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             }
         }
 
-        else if(requestCode == REQUEST_CODE_CAMERA)
+        else if(requestCode == REQUEST_CODE_CAMERA && resultCode == RESULT_OK)
         {
             if(data!=null)
             {

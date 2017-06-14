@@ -52,10 +52,14 @@ public class CaptionAdapter extends CursorAdapter {
         options.inSampleSize = 8;
         bitmap = BitmapFactory.decodeFile(picturePath, options);
 
+        // Scaling bitmap further
+        int nh = (int) (bitmap.getHeight() * (512.0 / bitmap.getWidth()));
+        Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 512, nh, true);
+
 
         // Setting image and captions
         ImageView captionImage = (ImageView) view.findViewById(R.id.caption_imageView);
-        captionImage.setImageBitmap(bitmap);
+        captionImage.setImageBitmap(scaled);
 
         TextView caption = (TextView)view.findViewById(R.id.caption_textView);
         caption.setText(cursor.getString(cursor.getColumnIndexOrThrow(CaptionEntry.COLUMN_CAPTION)));
