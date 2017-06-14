@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:padding="20dp"
+        android:text="@string/select_image"
+        android:textColor="@android:color/black"
+        android:textSize="24sp"
+        android:visibility="visible"
+        android:layout_weight="1"/>
+
+    <ImageView
+        android:id="@+id/instaCropperView"
+        android:layout_width="100dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_margin="30dp"
+        android:layout_weight="1"
+        android:contentDescription="@string/image_selection_description"
+        android:src="@mipmap/ic_launcher"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:padding="20dp"
+        android:text="@string/caption"
+        android:textColor="@android:color/black"
+        android:textSize="24sp"
+        android:visibility="visible"
+        android:layout_weight="1"/>
+
+    <EditText
+        android:id="@+id/caption_editText"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:layout_marginEnd="25dp"
+        android:layout_marginStart="25dp"
+        android:layout_weight="0.4"
+        android:backgroundTint="#AAAAAA"
+        android:maxLines="2"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:inputType="text"
+        android:hint="@string/editText_hint"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+</LinearLayout>
