@@ -53,18 +53,20 @@ public class CaptionProvider extends ContentProvider {
         {
             case URI_WITHOUT_PATH :
                 cursor = mDatabase.query(CaptionEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
-                getContext().getContentResolver().notifyChange(uri, null);
-                return cursor;
+                break;
 
             case URI_WITH_PATH :
                 selection = CaptionContract.CaptionEntry.COLUMN_ID + "=?";
                 selectionArgs = new String[] {String.valueOf(ContentUris.parseId(uri))};
                 cursor = mDatabase.query(CaptionEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
-                getContext().getContentResolver().notifyChange(uri, null);
-                return cursor;
+                break;
 
             default : throw new IllegalArgumentException("Cannot serve URI request at this moment.");
         }
+
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+
+        return cursor;
     }
 
     @Override

@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
@@ -15,7 +16,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,7 +27,7 @@ import android.widget.Toast;
 import com.hmproductions.captionme.R;
 import com.hmproductions.captionme.data.CaptionContract;
 import com.hmproductions.captionme.data.CaptionContract.CaptionEntry;
-import com.yalantis.ucrop.UCrop;
+import com.soundcloud.android.crop.Crop;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -180,7 +180,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                         .setNegativeButton("EDIT", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                UCrop.of(mImageUri,mImageUri).withMaxResultSize(100,100).start(EditorActivity.this);
+                                Crop.of(mImageUri,mImageUri).start(EditorActivity.this, REQUEST_CODE_CROP);
                             }
                         })
                         .setPositiveButton("CHANGE", new DialogInterface.OnClickListener() {
@@ -218,7 +218,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 if(requestCode == REQUEST_CODE_GALLERY)
                     mImageUri = data.getData();
                 else {
-                    mImageUri = UCrop.getOutput(data);
+                    mImageUri = Crop.getOutput(data);
                     Log.v(LOG_TAG, String.valueOf(mImageUri));
                 }
 
