@@ -33,7 +33,7 @@
         <provider
             android:authorities="com.hmproductions.captionme"
             android:name=".data.CaptionProvider"
-            android:exported="true"/>
+            android:exported="false"/>
 
         <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
 

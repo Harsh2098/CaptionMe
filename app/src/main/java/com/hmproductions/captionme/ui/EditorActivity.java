@@ -4,12 +4,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.CursorLoader;
@@ -27,6 +29,7 @@ import android.widget.Toast;
 import com.hmproductions.captionme.R;
 import com.hmproductions.captionme.data.CaptionContract;
 import com.hmproductions.captionme.data.CaptionContract.CaptionEntry;
+import com.hmproductions.captionme.utils.PermissionUtils;
 import com.soundcloud.android.crop.Crop;
 
 import java.io.ByteArrayOutputStream;
@@ -42,6 +45,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private static final int REQUEST_CODE_CAMERA = 1002 ;
     private static final int REQUEST_CODE_CROP = 69;
     private static final int LOADER_ID = 1000;
+
+    /* Permission Codes */
+    private static final int CAMERA_PERMISSION_CODE = 100 ;
+    private static final int READ_PERMISSION_CODE = 101;
+    private static final int WRITE_PERMISSION_CODE = 102;
 
     ImageView caption_imageView;
     EditText caption_editText;
@@ -159,7 +167,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             public void onClick(View v)
             {
                 userChangedSomething = true;
-                addBuilder.show();
+
+                boolean permissionGranted = PermissionUtils.CheckAllPermissions(EditorActivity.this);
+                if(permissionGranted)
+                    addBuilder.show();
             }
         });
     }
@@ -173,23 +184,25 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
                 userChangedSomething = true;
 
-                AlertDialog.Builder editBuilder = new AlertDialog.Builder(EditorActivity.this);
-                editBuilder
-                        .setTitle("Choose an option")
-                        .setMessage("Do you want to edit or change the image?")
-                        .setNegativeButton("EDIT", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Crop.of(mImageUri,mImageUri).start(EditorActivity.this, REQUEST_CODE_CROP);
-                            }
-                        })
-                        .setPositiveButton("CHANGE", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                addBuilder.show();
-                            }
-                        })
-                        .show();
+                if(PermissionUtils.CheckAllPermissions(EditorActivity.this)) {
+                    AlertDialog.Builder editBuilder = new AlertDialog.Builder(EditorActivity.this);
+                    editBuilder
+                            .setTitle("Choose an option")
+                            .setMessage("Do you want to edit or change the image?")
+                            .setNegativeButton("EDIT", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Crop.of(mImageUri, mImageUri).start(EditorActivity.this, REQUEST_CODE_CROP);
+                                }
+                            })
+                            .setPositiveButton("CHANGE", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    addBuilder.show();
+                                }
+                            })
+                            .show();
+                }
             }
         });
     }
@@ -205,6 +218,27 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         });
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode)
+        {
+            case CAMERA_PERMISSION_CODE :
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    PermissionUtils.setCameraPermission(true);
+                break;
+
+            case READ_PERMISSION_CODE :
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    PermissionUtils.setReadStoragePermission(true);
+                break;
+
+            case WRITE_PERMISSION_CODE :
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    PermissionUtils.setWriteStoragePermission(true);
+                break;
+        }
+    }
 
     /* Handles the URI or the image returned from the result and assigns it to mImageUri*/
     @Override
@@ -250,9 +284,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     public Uri getImageUri(Context context, Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), inImage, "Title", null);
+        String path = MediaStore.Images.Media.insertImage(context.getContentResolver(), inImage, "Caption Image", null);
         return Uri.parse(path);
     }
+
 
     /* Inflates and handles the menu items */
     @Override
@@ -315,6 +350,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         return true;
     }
 
+
     /* Getting the required data from database on a background thread */
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -353,3 +389,17 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         // #YOLO
     }
 }
+
+ /* Copyright 2016 SoundCloud
+
+        Licensed under the Apache License, Version 2.0 (the "License");
+        you may not use this file except in compliance with the License.
+        You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+        Unless required by applicable law or agreed to in writing, software
+        distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        See the License for the specific language governing permissions and
+        limitations under the License.              */
