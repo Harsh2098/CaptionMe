@@ -20,6 +20,7 @@ public class PermissionUtils {
     private static final int WRITE_PERMISSION_CODE = 102;
 
     private static boolean mCameraPermission, mReadStoragePermission, mWriteStoragePermission;
+    static int permissionCode;
 
     public PermissionUtils() {
         mCameraPermission = false;
@@ -43,7 +44,9 @@ public class PermissionUtils {
             {
                 Toast.makeText(context, "Permission Denied", Toast.LENGTH_LONG).show();
             }
-                ActivityCompat.requestPermissions((Activity)context, new String[]{permission}, CAMERA_PERMISSION_CODE);
+
+            permissionCode = permission.equals(Manifest.permission.CAMERA)?CAMERA_PERMISSION_CODE:permission.equals(Manifest.permission.READ_EXTERNAL_STORAGE)?READ_PERMISSION_CODE:WRITE_PERMISSION_CODE;
+            ActivityCompat.requestPermissions((Activity)context, new String[]{permission}, permissionCode);
         }
 
         else if(permission.equals(Manifest.permission.CAMERA))

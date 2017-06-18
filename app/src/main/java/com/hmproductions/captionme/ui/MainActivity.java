@@ -117,7 +117,7 @@ public class MainActivity
         if(adapter.getCount() == 0)
             menu.findItem(R.id.action_delete).setVisible(false);
         else
-            menu.findItem(R.id.action_delete).setIcon(R.mipmap.ic_delete_forever);
+            menu.findItem(R.id.action_delete).setIcon(R.mipmap.ic_delete_forever3);
         return super.onPrepareOptionsMenu(menu);
     }
 

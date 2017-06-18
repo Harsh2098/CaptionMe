@@ -14,6 +14,8 @@
             android:id="@+id/caption_imageView"
             android:layout_width="55dp"
             android:layout_height="55dp"
+            android:maxHeight="55dp"
+            android:maxWidth="55dp"
             android:contentDescription="@string/image_description" />
 
 
